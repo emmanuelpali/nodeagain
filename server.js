@@ -7,7 +7,12 @@ const { logger} = require('./middleware/logEvents');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
+const mongoose = require('mongoose');
+const connectDB = require('./config/dbConnection');
 const PORT = process.env.PORT || 3500;
+require('dotenv').config();
+
+
 
 //middlewares
 app.use(logger); 
@@ -32,6 +37,10 @@ app.use(verifyJWT);
 app.use('/employees', require('./routes/api/employees'));
 
 
+// connect to database
+connectDB();
 
-
-app.listen(PORT, () => console.log(`server on port: ${PORT}`));
+mongoose.connection.once('open', () => {
+    console.log('Connected to Mongo');
+    app.listen(PORT, () => console.log(`server on port: ${PORT}`));
+})
